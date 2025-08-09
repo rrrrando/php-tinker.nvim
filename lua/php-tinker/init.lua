@@ -91,7 +91,7 @@ M.run_tinker = function()
   end
   local phpver_result = vim.trim(phpver_handle:read("*a"))
   phpver_handle:close()
-  local versionValid = string.match(phpver_result, '/\\d\\.\\d/') ~= nil;
+  local versionValid = string.match(phpver_result, '%d%.%d') ~= nil;
 
   if not versionValid then
     print("PHP version response was an improper format.\n" .. phpver_result)

@@ -86,7 +86,7 @@ M.run_tinker = function()
   local getPhpVersion_Command = "php -v | grep \"PHP [0-9]\\.[0-9]\" | sed 's/^.* \\([0-9]\\.[0-9]\\).*$/\\1/'";
   local phpver_handle = io.popen(getPhpVersion_Command)
   if not phpver_handle then
-    vim.health.error("PHP version retrieval failed. Please ensure PHP is installed and is in your path.")
+    print("PHP version retrieval failed. Please ensure PHP is installed and is in your path.")
     return
   end
   local phpver_result = vim.trim(phpver_handle:read("*a"))
@@ -94,7 +94,7 @@ M.run_tinker = function()
   local versionValid = string.match(phpver_result, '/\\d\\.\\d/') ~= nil;
 
   if not versionValid then
-    vim.health.error("PHP version response was an improper format.\n" .. phpver_result)
+    print("PHP version response was an improper format.\n" .. phpver_result)
     return
   end
 
@@ -110,7 +110,7 @@ M.run_tinker = function()
   );
   local handle = io.popen(command)
   if not handle then
-    vim.health.error("Failed to run tinker client with version " .. phpver_result)
+    print("Failed to run tinker client with version " .. phpver_result)
     return
   end
   local result = handle:read("*a")

@@ -2,6 +2,12 @@
 A PHP REPL right in your editor! Tinker away without sacrificing your blessed keybinds!
 
 ![Preview of php-tinker.nvim editor](https://github.com/user-attachments/assets/64659f5c-0b71-45e1-b7c8-98f473cbc581)
+<details>
+  <summary>See it in action</summary>
+
+  <video src="https://github.com/user-attachments/assets/5c3b31e5-63d7-49f0-b872-58e711a9278c">Demo video</video>
+
+</details>
 
 ## Usage
 As long as you're in a PHP project, run `:PhpTinker` to open two buffers split on the screen.
@@ -51,6 +57,15 @@ The `run_tinker` keymap defines what keymap in normal mode will trigger the `:Ph
   ```
 
   No other files necessary. Just a quick `mkdir vendor && echo "<?php" > vendor/autoload.php` should do the trick.
+  
+</details>
+
+<details>
+  <summary>Are semicolons required or not?</summary>
+  
+  Semicolons **are required** for every PHP statement you would normally need one on **except for the last line**. So when you write your first line in the buffer, you could leave it off. However, once you start adding more code you'd need to go back and add a semicolon to that first statement you wrote.
+  
+  The last line can have a semicolon too if that's what you really want, though.
   
 </details>
 

@@ -1,12 +1,83 @@
 local M = {}
 
+-- gsplit: iterate over substrings in a string separated by a pattern
+-- stolen from somewhere probably
+--
+-- Parameters:
+-- text (string)    - the string to iterate over
+-- pattern (string) - the separator pattern
+-- plain (boolean)  - if true (or truthy), pattern is interpreted as a plain
+--                    string, not a Lua pattern
+--
+-- Returns: iterator
+--
+-- Usage:
+-- for substr in gsplit(text, pattern, plain) do
+--   doSomething(substr)
+-- end
+local function gsplit(text, pattern, plain)
+  local splitStart, length = 1, #text
+  return function()
+    if splitStart then
+      local sepStart, sepEnd = string.find(text, pattern, splitStart, plain)
+      local ret
+      if not sepStart then
+        ret = string.sub(text, splitStart)
+        splitStart = nil
+      elseif sepEnd < sepStart then
+        -- Empty separator!
+        ret = string.sub(text, splitStart, sepStart)
+        if sepStart < length then
+          splitStart = sepStart + 1
+        else
+          splitStart = nil
+        end
+      else
+        ret = sepStart > splitStart and string.sub(text, splitStart, sepStart - 1) or ''
+        splitStart = sepEnd + 1
+      end
+      return ret
+    end
+  end
+end
+
+-- split: split a string into substrings separated by a pattern.
+-- stolen from somewhere probably
+--
+-- Parameters:
+-- text (string)    - the string to iterate over
+-- pattern (string) - the separator pattern
+-- plain (boolean)  - if true (or truthy), pattern is interpreted as a plain
+--                    string, not a Lua pattern
+--
+-- Returns: table (a sequence table containing the substrings)
+local function str_split(text, pattern, plain)
+  local ret = {}
+  for match in gsplit(text, pattern, plain) do
+    table.insert(ret, match)
+  end
+  return ret
+end
+
+local function str_finish(inputstr, suffix)
+  if vim.endswith(inputstr, suffix) then
+    return inputstr
+  end
+  return inputstr .. suffix
+end
+
+local function str_beforeLast(inputstr, needle)
+  local result, _ = string.gsub(inputstr, "^(.*)" .. needle .. ".*$", "%1")
+  return result
+end
+
 M.run_tinker = function()
   vim.cmd('set ft=php_only')
 
   -- MARK: get contents and context
   local contents = vim.trim(table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n"))
   if (contents ~= "<?php") then
-    contents = contents:finish(";")
+    contents = str_finish(contents, ";")
   end
   local b64contents = vim.base64.encode(contents)
   local working_dir = vim.fn.getcwd()
@@ -14,11 +85,20 @@ M.run_tinker = function()
   -- MARK: Get php version
   local getPhpVersion_Command = "php -v | grep \"PHP [0-9]\\.[0-9]\" | sed 's/^.* \\([0-9]\\.[0-9]\\).*$/\\1/'";
   local phpver_handle = io.popen(getPhpVersion_Command)
+  if not phpver_handle then
+    vim.health.error("PHP version retrieval failed. Please ensure PHP is installed and is in your path.")
+    return
+  end
   local phpver_result = vim.trim(phpver_handle:read("*a"))
   phpver_handle:close()
   local versionValid = string.match(phpver_result, '/\\d\\.\\d/') ~= nil;
 
-  local pluginDirectory = debug.getinfo(1).source:sub(2):beforeLast('/');
+  if not versionValid then
+    vim.health.error("PHP version response was an improper format.\n" .. phpver_result)
+    return
+  end
+
+  local pluginDirectory = str_beforeLast(debug.getinfo(1).source:sub(2), '/');
 
   -- MARK: run command
   local command = string.format(
@@ -29,6 +109,10 @@ M.run_tinker = function()
     b64contents
   );
   local handle = io.popen(command)
+  if not handle then
+    vim.health.error("Failed to run tinker client with version " .. phpver_result)
+    return
+  end
   local result = handle:read("*a")
   handle:close()
 
@@ -45,7 +129,7 @@ M.run_tinker = function()
 
   local info_contents = ""
 
-  for index, value in ipairs(data.output) do
+  for _, value in ipairs(data.output) do
     if vim.trim(info_contents) ~= "" then
       info_contents = info_contents .. "\n\n\n"
     end
@@ -89,7 +173,7 @@ M.run_tinker = function()
   -- add <?php if not already present to keep line numbers consistent
   if not vim.startswith(contents, "<?php") then
     contents = "<?php\n" .. contents
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, contents:split("\n", true))
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, str_split(contents, "\n", true))
   end
 
   -- Placeholder results text
@@ -97,13 +181,13 @@ M.run_tinker = function()
     info_contents = "\n\n\n// Get started by entering some code into the left window"
   end
   -- send processed results to results buffer
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, info_contents:split("\n", true))
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, str_split(info_contents, "\n", true))
 
   -- save state
   vim.g.dakin_php_playground = olddata
 end
 
-M.setup = function (opts)
+M.setup = function(opts)
   opts = opts or {}
 
   -- prepare state table

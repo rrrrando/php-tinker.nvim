@@ -12,6 +12,7 @@ A PHP REPL right in your editor! Tinker away without sacrificing your blessed ke
 ## Usage
 As long as you're in a PHP project, run `:PhpTinker` to open two buffers split on the screen.
 > If you don't see two buffers in split screen, it's likely because you're not in a PHP project that could be found by the [TweakPHP client](https://github.com/tweakphp/client).
+
 If you see the text "Tinker away!" on both screens, you're good to go! You can edit the left buffer, then run `:PhpTinkerRun` and you'll see the evaluation in the right buffer.
 
 ## Requirements

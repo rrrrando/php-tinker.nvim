@@ -71,9 +71,8 @@ The `run_tinker` keymap defines what keymap in normal mode will trigger the `:Ph
 </details>
 
 ## Roadmap
-Nothing. Don't expect anything from me.
 
-But if I have time, maybe a couple of these will get done:
+If I have time, I might tackle some of these:
 - Add more configuration where applicable
   - e.g. hooks for the startup process, so you can replace the default `"Tinker away!"` text with something useful like dependency imports
 - Add a help entry

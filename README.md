@@ -40,7 +40,8 @@ In your favorite package manager, add `tylerdak/php-tinker.nvim`. I use lazy, he
 ## Configuration
 I suggest starting with the above if you're using lazy. Once you've added the plugin to your manager, you could technically be up and running on your next restart. However, I suggest adding a keymap like I do above.
 
-The `run_tinker` keymap defines what keymap in normal mode will trigger the `:PhpTinkerRun` command. For consistency with something like CodeCompanion, `<CR>` feels like a nice default to try first. When developing this I was using `<Leader>rp` (for RunPhp, I guess) but that was pretty goofy and not very intuitive.
+The `run_tinker` keymap defines what keymap in normal mode will trigger the `:PhpTinkerRun` command.
+> For consistency with something like CodeCompanion, `<CR>` feels like a nice default to try first. When developing this I was using `<Leader>rp` (for RunPhp, I guess) but that was pretty goofy and not very intuitive.
 
 ## Troubleshooting
 <details>
@@ -82,4 +83,4 @@ But if I have time, maybe a couple of these will get done:
 - Savable tinker sessions
 - LSP/cmp support would be really poggers but I have no clue how to do that yet
 
-Feel free to submit PRs or ideas for getting the above done, though!
+> Feel free to submit PRs or ideas for getting the above done, though!

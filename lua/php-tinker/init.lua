@@ -216,10 +216,9 @@ M.setup = function(opts)
 	-- easily bootable tinker window
 	vim.api.nvim_create_user_command("PhpTinker", function()
 		local buf = vim.api.nvim_create_buf(true, false)
+		vim.api.nvim_set_option_value("filetype", "php", { buf = buf })
 		vim.api.nvim_win_set_buf(0, buf)
 		M.fake_scratch_buffer("php-tinker-main.php")
-		vim.api.nvim_set_option_value("filetype", "php", { buf = buf })
-		vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
 		vim.api.nvim_buf_set_lines(buf, 0, 1, false, { "<?php", "", "//Tinker away!" }) -- example code
 		vim.api.nvim_win_set_cursor(0, { 3, 0 })                                      -- position cursor
 
